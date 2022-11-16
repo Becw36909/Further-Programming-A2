@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.RecordsController">
+   <children>
+      <SplitPane fx:id="mainSplitPane" dividerPositions="0.2506265664160401" layoutX="250.0" layoutY="78.0" prefHeight="522.0" prefWidth="800.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="78.0">
+        <items>
+          <AnchorPane fx:id="splitPaneLeft" minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+               <children>
+                  <VBox layoutX="37.0" layoutY="36.0" spacing="20.0">
+                     <children>
+                        <Button fx:id="newRecordButton" mnemonicParsing="false" prefHeight="30.0" prefWidth="124.0" text="New Record">
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                        </Button>
+                        <Button fx:id="editRecordButton" mnemonicParsing="false" prefHeight="30.0" prefWidth="124.0" text="Edit a Record">
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                        </Button>
+                        <Button fx:id="deleteRecordButton" mnemonicParsing="false" prefHeight="30.0" prefWidth="124.0" text="Delete a Record">
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                        </Button>
+                        <Button fx:id="viewAllRecordsButton" mnemonicParsing="false" prefHeight="30.0" prefWidth="124.0" text="View All Records">
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                        </Button>
+                        <Button fx:id="homeButton" mnemonicParsing="false" prefHeight="30.0" prefWidth="124.0" text="Home">
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                        </Button>
+                     </children>
+                  </VBox>
+               </children></AnchorPane>
+          <AnchorPane fx:id="splitPaneRight" minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+               <children>
+                  <SplitPane fx:id="innerSplitPane" dividerPositions="0.30201342281879195" layoutX="182.0" layoutY="152.0" orientation="VERTICAL" prefHeight="598.0" prefWidth="595.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                    <items>
+                      <AnchorPane fx:id="InnerSplitPaneTop" minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+                           <children>
+                              <TableView fx:id="table" layoutX="163.0" prefHeight="177.0" prefWidth="593.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                <columns>
+                                  <TableColumn fx:id="dateCol" prefWidth="75.0" text="Date" />
+                                  <TableColumn fx:id="weightCol" prefWidth="94.0" text="Weight (kg)" />
+                                    <TableColumn fx:id="tempCol" prefWidth="99.0" text="Temperature" />
+                                    <TableColumn fx:id="bloodPressCol" prefWidth="108.0" text="Blood Pressure" />
+                                    <TableColumn fx:id="notesCol" minWidth="0.0" prefWidth="216.0" text="Notes" />
+                                </columns>
+                              </TableView>
+                           </children>
+                        </AnchorPane>
+                      <AnchorPane fx:id="InnerSplitPaneBottom" minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0" />
+                    </items>
+                  </SplitPane>
+               </children>
+            </AnchorPane>
+        </items>
+      </SplitPane>
+      <Label layoutX="43.0" layoutY="29.0" prefHeight="35.0" prefWidth="237.0" text="MyHealth - Records">
+         <font>
+            <Font name="System Bold" size="24.0" />
+         </font>
+      </Label>
+      <Label fx:id="userMessage" alignment="CENTER_RIGHT" contentDisplay="CENTER" layoutX="440.0" layoutY="29.0" prefHeight="35.0" prefWidth="341.0">
+         <font>
+            <Font size="24.0" />
+         </font>
+      </Label>
+   </children>
+</AnchorPane>
