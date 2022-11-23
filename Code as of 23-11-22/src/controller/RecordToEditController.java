@@ -1,0 +1,450 @@
+package controller;
+
+import java.io.IOException;
+
+import javafx.fxml.FXML;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.SplitPane;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.paint.Color;
+import model.RecordCollections;
+
+/**
+ * RecordToEditController is a Controller class between RecordToEdit.fxml and
+ * RecordCollections.java. Takes all inputs from the view fxml and runs all
+ * intermediate method checks to make sure input data is valid before passing
+ * validated input to the backend class.
+ * 
+ * @author Rebecca Watson
+ *
+ */
+public class RecordToEditController {
+
+	/**
+	 * Setting up private variables for the class.
+	 */
+	private RecordCollections recordCollections = RecordCollections.getInstance();
+
+	private GoToScene goToScene;
+
+	private final int ZERO = 0;
+	private int allFieldsValidated = 0;
+	private int enoughFieldsPassed = 4;
+	private int formFieldsPassed;
+	private int recordFormErrors;
+
+	@FXML
+	private Button backButton;
+
+	@FXML
+	private Label bloodHighMessage;
+
+	@FXML
+	private TextField bloodHighTextField;
+
+	@FXML
+	private Label bloodLowMessage;
+
+	@FXML
+	private TextField bloodLowTextField;
+
+	@FXML
+	private Button cancelRecordButton;
+
+	@FXML
+	private Button updateRecordButton;
+
+	@FXML
+	private Label dateMessage;
+
+	@FXML
+	private TextField dateTextField;
+
+	@FXML
+	private SplitPane mainSplitPane;
+
+	@FXML
+	private Label message;
+
+	@FXML
+	private Label notesMessage;
+
+	@FXML
+	private TextArea notesTextArea;
+
+	@FXML
+	private Label recordUpdatedMessage;
+
+	@FXML
+	private AnchorPane splitPaneLeft;
+
+	@FXML
+	private AnchorPane splitPaneRight;
+
+	@FXML
+	private Label tempMessage;
+
+	@FXML
+	private TextField tempTextField;
+
+	@FXML
+	private Label timeMessage;
+
+	@FXML
+	private TextField timeTextField;
+
+	@FXML
+	private Label weightMessage;
+
+	@FXML
+	private TextField weightTextField;
+
+	/**
+	 * Sets up event handlers of the class and runs required methods on each action.
+	 */
+	@FXML
+	public void initialize() {
+		goToScene = new GoToScene();
+
+		System.out.println("INSIDE edit a record CONTROLLER");
+
+		timeTextField.setText(recordCollections.recordToEditGetTime());
+		dateTextField.setText(recordCollections.recordToEditGetDate());
+		weightTextField.setText(recordCollections.recordToEditGetWeight());
+		tempTextField.setText(recordCollections.recordToEditGetTemp());
+		bloodLowTextField.setText(recordCollections.recordToEditGetBloodLow());
+		bloodHighTextField.setText(recordCollections.recordToEditGetBloodHigh());
+		notesTextArea.setText(recordCollections.recordToEditGetNotes());
+
+		updateRecordButton.setOnAction(event -> {
+			recordUpdatedMessage.setText("");
+			System.out.println("updateRecordButton PRESSED");
+			formFieldsPassed = checkAllFields();
+
+			if (recordCollections.recordToEditInArray()) {
+				if (validatedDate() && validateTime()) {
+					System.out.println("passed first if and date and time validation methods");
+					//
+//					if (recordCollections.searchRecordExists(dateTextField.getText(), timeTextField.getText()) != ZERO) {
+//						recordUpdatedMessage.setTextFill(Color.RED);
+//						recordUpdatedMessage.setText("This date and time has already been recorded!");
+//					} else 
+
+					if (formFieldsPassed < enoughFieldsPassed) {
+						System.out.println("passed into second ELSE IF of create record button");
+						recordUpdatedMessage.setTextFill(Color.RED);
+						recordUpdatedMessage.setText("Need to complete at least 4 record fields");
+						System.out.println("formFieldsPassed: " + formFieldsPassed);
+
+					} else {
+						System.out.println("passed into second IF of create record button");
+//						System.out.println("recordFormErrors: " + recordFormErrors);
+						System.out.println("formFieldsPassed: " + formFieldsPassed);
+
+						recordUpdatedMessage.setTextFill(Color.GREEN);
+						recordUpdatedMessage.setText("Record has been Updated!");
+						editExistingRecord();
+
+						clearInputFields();
+					}
+				}
+			} else {
+				recordUpdatedMessage.setTextFill(Color.RED);
+				recordUpdatedMessage.setText("Go back and choose a record to update");
+			}
+
+		});
+
+		cancelRecordButton.setOnAction(event -> {
+			System.out.println("cancelRecordButton PRESSED");
+			clearInputFields();
+
+			clearMessageFields();
+
+			recordUpdatedMessage.setText("");
+		});
+
+		backButton.setOnAction(event -> {
+			System.out.println("back button PRESSED");
+			try {
+				goToScene.moveToEditRecordScene(event);
+			} catch (IOException e) {
+				System.out.println("DIDN'T WORK");
+				e.printStackTrace();
+			}
+		});
+	}
+
+	/**
+	 * Collects all valid text field entries to pass to RecordCollections class to
+	 * edit a record object.
+	 */
+	private void editExistingRecord() {
+		recordCollections.editExistingRecord(dateTextField.getText(), timeTextField.getText(),
+				weightTextField.getText(), tempTextField.getText(), bloodLowTextField.getText(),
+				bloodHighTextField.getText(), notesTextArea.getText());
+	}
+
+	/**
+	 * Sets all text fields to empty/removes any user inputs.
+	 */
+	private void clearInputFields() {
+		timeTextField.clear();
+		dateTextField.clear();
+		weightTextField.clear();
+		tempTextField.clear();
+		bloodLowTextField.clear();
+		bloodHighTextField.clear();
+		notesTextArea.clear();
+	}
+
+	/**
+	 * Sets all message labels to empty strings.
+	 */
+	private void clearMessageFields() {
+		timeMessage.setText("");
+		dateMessage.setText("");
+		weightMessage.setText("");
+		tempMessage.setText("");
+		bloodLowMessage.setText("");
+		bloodHighMessage.setText("");
+		notesMessage.setText("");
+	}
+
+	/**
+	 * Runs all validation methods on text field inputs.
+	 * 
+	 * @return the value of formFieldsPassed (possibly incremented according to
+	 *         validation methods).
+	 */
+	private int checkAllFields() {
+
+		formFieldsPassed = 0;
+
+		if (validatedDate()) {
+			formFieldsPassed++;
+		}
+		if (validateTime()) {
+			formFieldsPassed++;
+		}
+		if (validatedWeight()) {
+			formFieldsPassed++;
+		}
+		if (validatedTemp()) {
+			formFieldsPassed++;
+		}
+		if (validatedBloodPressureLow()) {
+			formFieldsPassed++;
+		}
+		if (validatedBloodPressureHigh()) {
+			formFieldsPassed++;
+		}
+		if (validatedNotes()) {
+			formFieldsPassed++;
+
+		}
+		return formFieldsPassed;
+
+	}
+
+	/**
+	 * Checks if time text field is empty or if it passes a RecordCollections time
+	 * format check.
+	 * 
+	 * @return true if time input is valid; false otherwise.
+	 */
+	private boolean validateTime() {
+		boolean checkedTime = false;
+		if (timeTextField.getText().isEmpty()) {
+			timeMessage.setTextFill(Color.RED);
+			timeMessage.setText("Time cannot be blank");
+		} else if (!recordCollections.timeFormatCheck(timeTextField.getText())) {
+			timeMessage.setTextFill(Color.RED);
+			timeMessage.setText("Time needs to be in format hh:mm");
+		}
+//		else if (recordCollections.searchRecordExists(dateTextField.getText()) != ZERO) {
+//			dateMessage.setTextFill(Color.RED);
+//			dateMessage.setText("This date has already been recorded!");
+//		} 
+		else {
+			timeMessage.setText("");
+			checkedTime = true;
+		}
+		return checkedTime;
+	}
+
+	/**
+	 * Checks if date text field is empty or if it passes a RecordCollections date
+	 * format check.
+	 * 
+	 * @return true if date input is valid; false otherwise.
+	 */
+	private boolean validatedDate() {
+		boolean checkedDate = false;
+		if (dateTextField.getText().isEmpty()) {
+			dateMessage.setTextFill(Color.RED);
+			dateMessage.setText("Date cannot be blank");
+		} else if (!recordCollections.dateFormatCheck(dateTextField.getText())) {
+			dateMessage.setTextFill(Color.RED);
+			dateMessage.setText("Date needs to be in format dd/MM/yyyy");
+		}
+//		else if (recordCollections.searchRecordExists(dateTextField.getText()) != ZERO) {
+//			dateMessage.setTextFill(Color.RED);
+//			dateMessage.setText("This date has already been recorded!");
+//		} 
+		else {
+			dateMessage.setText("");
+			checkedDate = true;
+		}
+		return checkedDate;
+	}
+
+	/**
+	 * Checks if notes text area is empty or if it passes a RecordCollections notes
+	 * format check for string length.
+	 * 
+	 * @return true if notes input is valid; false otherwise.
+	 */
+	private boolean validatedNotes() {
+		boolean notesChecked = false;
+		if (notesTextArea.getText().isEmpty()) {
+//			notesMessage.setTextFill(Color.RED);
+//			notesMessage.setText("Must enter at least a few words below");
+		} else {
+			String userNotes = notesTextArea.getText();
+			if (!recordCollections.checkNotesLength(userNotes)) {
+				notesMessage.setTextFill(Color.RED);
+				notesMessage.setText("Too many words, must be 50 or less");
+			} else {
+				notesMessage.setText("");
+				notesChecked = true;
+			}
+		}
+		return notesChecked;
+	}
+
+	/**
+	 * Checks if blood low text field is empty or if it passes a RecordCollections
+	 * check for within an acceptable range.
+	 * 
+	 * @return true if blood low input is valid; false otherwise.
+	 */
+	private boolean validatedBloodPressureLow() {
+		boolean checkedBloodLow = false;
+		try {
+			if (bloodLowTextField.getText().isEmpty()) {
+//				bloodLowMessage.setTextFill(Color.RED);
+//				bloodLowMessage.setText("Must complete field");
+			} else {
+
+				Double bloodLow = Double.parseDouble(bloodLowTextField.getText());
+				if (!recordCollections.bloodPressureHigh(bloodLow)) {
+					System.out.println("inside blood low ELSE");
+					bloodLowMessage.setTextFill(Color.RED);
+					bloodLowMessage.setText("Temp not in safe range!");
+				} else {
+					bloodLowMessage.setText("");
+					checkedBloodLow = true;
+				}
+			}
+		} catch (NumberFormatException e) {
+			bloodLowMessage.setTextFill(Color.RED);
+			bloodLowMessage.setText("Enter a valid number");
+		}
+		return checkedBloodLow;
+	}
+
+	/**
+	 * Checks if blood high text field is empty or if it passes a RecordCollections
+	 * check for within an acceptable range.
+	 * 
+	 * @return true if blood high input is valid; false otherwise.
+	 */
+	private boolean validatedBloodPressureHigh() {
+		boolean checkedBloodHigh = false;
+		try {
+			if (bloodHighTextField.getText().isEmpty()) {
+//				bloodHighMessage.setTextFill(Color.RED);
+//				bloodHighMessage.setText("Must complete field");
+			} else {
+				Double bloodHigh = Double.parseDouble(bloodHighTextField.getText());
+				if (!recordCollections.bloodPressureHigh(bloodHigh)) {
+					bloodHighMessage.setTextFill(Color.RED);
+					bloodHighMessage.setText("Temp not in safe range!");
+				} else {
+					System.out.println("inside blood high ELSE");
+					bloodHighMessage.setText("");
+					checkedBloodHigh = true;
+				}
+			}
+		} catch (NumberFormatException e) {
+			bloodHighMessage.setTextFill(Color.RED);
+			bloodHighMessage.setText("Enter a valid number");
+		}
+		return checkedBloodHigh;
+	}
+
+	/**
+	 * Checks if temperature text field is empty or if it passes a RecordCollections
+	 * check for within an acceptable range.
+	 * 
+	 * @return true if temp input is valid; false otherwise.
+	 */
+	private boolean validatedTemp() {
+		boolean checkedTemp = false;
+		try {
+			if (tempTextField.getText().isEmpty()) {
+//				tempMessage.setTextFill(Color.RED);
+//				tempMessage.setText("Temperature cannot be blank");
+			} else {
+				Double temp = Double.parseDouble(tempTextField.getText());
+				if (!recordCollections.tempRange(temp)) {
+					tempMessage.setTextFill(Color.RED);
+					System.out.println("inside TEMP second if");
+					tempMessage.setText("Temperature not in safe range - seek help!");
+				} else {
+					System.out.println("inside TEMP nested else");
+					tempMessage.setText("");
+					checkedTemp = true;
+				}
+			}
+		} catch (NumberFormatException e) {
+			tempMessage.setTextFill(Color.RED);
+			tempMessage.setText("Enter a valid number");
+		}
+		return checkedTemp;
+	}
+
+	/**
+	 * Checks if weight text field is empty or if it passes a RecordCollections
+	 * check for within an acceptable range.
+	 * 
+	 * @return true if weight input is valid; false otherwise.
+	 */
+	private boolean validatedWeight() {
+		boolean checkedWeight = false;
+		try {
+			if (weightTextField.getText().isEmpty()) {
+//				weightMessage.setTextFill(Color.RED);
+//				weightMessage.setText("Weight cannot be blank");
+			} else {
+				Double weight = Double.parseDouble(weightTextField.getText());
+				if (!recordCollections.weightRange(weight)) {
+					weightMessage.setTextFill(Color.RED);
+					weightMessage.setText("Weight must be in range 0-650 kgs");
+				} else {
+					weightMessage.setText("");
+					checkedWeight = true;
+				}
+			}
+		} catch (NumberFormatException e) {
+			weightMessage.setTextFill(Color.RED);
+			weightMessage.setText("Enter a valid number");
+		}
+		return checkedWeight;
+	}
+
+}
