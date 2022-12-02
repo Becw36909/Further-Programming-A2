@@ -117,7 +117,7 @@ public class CreateNewRecordController {
 				if (recordCollections.searchRecordExists(dateTextField.getText(), timeTextField.getText()) != ZERO) {
 					recordCreatedMessage.setTextFill(Color.RED);
 					recordCreatedMessage.setText("This date and time has already been recorded!");
-				} else if (formFieldsPassed > enoughFieldsPassed) {
+				} else if (formFieldsPassed <= enoughFieldsPassed) {
 					recordCreatedMessage.setTextFill(Color.RED);
 					recordCreatedMessage.setText("Need to complete at least 3 record fields");
 				} else {
