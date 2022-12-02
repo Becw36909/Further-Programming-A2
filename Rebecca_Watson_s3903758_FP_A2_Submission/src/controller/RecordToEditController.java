@@ -127,7 +127,7 @@ public class RecordToEditController {
 			if (recordCollections.recordToEditInArray()) {
 				if (validatedDate() && validateTime()) {
 
-					if (formFieldsPassed > enoughFieldsPassed) {
+					if (formFieldsPassed < enoughFieldsPassed) {
 						recordUpdatedMessage.setTextFill(Color.RED);
 						recordUpdatedMessage.setText("Need to complete at least 3 record fields");
 					} else {
